@@ -20,7 +20,7 @@ resource "aws_s3_bucket" "terraform_course" {
 ```bash
 terraform apply
 ```
-```txt
+```t
 An execution plan has been generated and is shown below.      
 Resource actions are indicated with the following symbols:    
   + create
@@ -80,7 +80,7 @@ terraform plan --help
 ```bash
 terraform plan
 ```
-```text
+```t
 aws_s3_bucket.terraform_course: Refreshing state... [id=tf-course-rafe-stefano]
 
 No changes. Infrastructure is up-to-date.
@@ -93,7 +93,7 @@ actions need to be performed.
 ```bash
 terraform plan -destroy
 ```
-```text
+```t
 An execution plan has been generated and is shown below.  
 Resource actions are indicated with the following symbols:
   - destroy
@@ -133,7 +133,7 @@ can't guarantee that exactly these actions will be performed if
 ```bash
 terraform plan -destroy -out=example
 ```
-```text
+```t
 An execution plan has been generated and is shown below.
 Resource actions are indicated with the following symbols:
   - destroy
@@ -172,7 +172,7 @@ To perform exactly these actions, run the following command to apply:
 ```bash
 terraform show example
 ```
-```text
+```t
 An execution plan has been generated and is shown below.
 Resource actions are indicated with the following symbols:
   - destroy
@@ -203,7 +203,7 @@ Plan: 0 to add, 0 to change, 1 to destroy.
 ## Terraform State
 - Terraform state shows our intention, it may not be fitted with actual infrastructure.
 - The last terraform state can be inspected from terraform.tfstate file. This is a JSON file. For example:
-```bash
+```t
 {
   "version": 4,
   "terraform_version": "0.14.5",
@@ -259,3 +259,79 @@ Plan: 0 to add, 0 to change, 1 to destroy.
   ]
 }
 ```
+- This is a local storage. There is also a remote storage for collaboration.
+- There are some options with "terraform state" command. 
+```bash
+terraform state list
+```
+```t
+aws_s3_bucket.terraform_course
+```
+- list option lists current infrastructure provisioned.
+- to see any of listed service:
+```bash
+terraform state show aws_s3_bucket.terraform_course
+```
+```t
+# aws_s3_bucket.terraform_course:
+resource "aws_s3_bucket" "terraform_course" {
+    acl                         = "private"
+    arn                         = "arn:aws:s3:::tf-course-rafe-stefano"
+    bucket                      = "tf-course-rafe-stefano"
+    bucket_domain_name          = "tf-course-rafe-stefano.s3.amazonaws.com"
+    bucket_regional_domain_name = "tf-course-rafe-stefano.s3.amazonaws.com"
+    force_destroy               = false
+    hosted_zone_id              = "Z3AQBSTGFYJSTF"
+    id                          = "tf-course-rafe-stefano"
+    region                      = "us-east-1"
+    request_payer               = "BucketOwner"
+
+    versioning {
+        enabled    = false
+        mfa_delete = false
+    }
+}
+```
+```bash
+terraform show
+```
+```t
+# aws_s3_bucket.terraform_course:
+resource "aws_s3_bucket" "terraform_course" {
+    acl                         = "private"
+    arn                         = "arn:aws:s3:::tf-course-rafe-stefano"
+    bucket                      = "tf-course-rafe-stefano"
+    bucket_domain_name          = "tf-course-rafe-stefano.s3.amazonaws.com"
+    bucket_regional_domain_name = "tf-course-rafe-stefano.s3.amazonaws.com"
+    force_destroy               = false
+    hosted_zone_id              = "Z3AQBSTGFYJSTF"
+    id                          = "tf-course-rafe-stefano"
+    region                      = "us-east-1"
+    request_payer               = "BucketOwner"
+
+    versioning {
+        enabled    = false
+        mfa_delete = false
+    }
+}
+```
+- To see graph version in dot format:
+```bash
+terraform graph
+```
+```t
+digraph {
+        compound = "true"
+        newrank = "true"
+        subgraph "root" {
+                "[root] aws_s3_bucket.terraform_course (expand)" [label = "aws_s3_bucket.terraform_course", shape = "box"]
+                "[root] provider[\"registry.terraform.io/hashicorp/aws\"]" [label = "provider[\"registry.terraform.io/hashicorp/aws\"]", shape = "diamond"]
+                "[root] aws_s3_bucket.terraform_course (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+                "[root] meta.count-boundary (EachMode fixup)" -> "[root] aws_s3_bucket.terraform_course (expand)"
+                "[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_s3_bucket.terraform_course (expand)"
+                "[root] root" -> "[root] meta.count-boundary (EachMode fixup)"
+                "[root] root" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)"
+        }
+}
+```
+- To visualize this graph, visit "http://www.jdolivet.byethost13.com/Logiciels/WebGraphviz/?i=1"
