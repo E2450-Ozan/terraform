@@ -76,13 +76,95 @@ Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 ```bash
 terraform plan --help
 ```
-- To destroy resources:
+- To see current status of our plan:
+```bash
+terraform plan
+```
+```text
+aws_s3_bucket.terraform_course: Refreshing state... [id=tf-course-rafe-stefano]
+
+No changes. Infrastructure is up-to-date.
+
+This means that Terraform did not detect any differences between your
+configuration and real physical resources that exist. As a result, no
+actions need to be performed.
+```
+- To see the destroy plan:
 ```bash
 terraform plan -destroy
+```
+```text
+An execution plan has been generated and is shown below.  
+Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # aws_s3_bucket.terraform_course will be destroyed      
+  - resource "aws_s3_bucket" "terraform_course" {
+      - acl                         = "private" -> null
+      - arn                         = "arn:aws:s3:::tf-course-rafe-stefano" -> null
+      - bucket                      = "tf-course-rafe-stefano" -> null
+      - bucket_domain_name          = "tf-course-rafe-stefano.s3.amazonaws.com" -> null
+      - bucket_regional_domain_name = "tf-course-rafe-stefano.s3.amazonaws.com" -> null
+      - force_destroy               = false -> null
+      - hosted_zone_id              = "Z3AQBSTGFYJSTF" -> null
+      - id                          = "tf-course-rafe-stefano" -> null
+      - region                      = "us-east-1" -> null
+      - request_payer               = "BucketOwner" -> null
+
+      - versioning {
+          - enabled    = false -> null
+          - mfa_delete = false -> null
+        }
+    }
+
+Plan: 0 to add, 0 to change, 1 to destroy.
+
+------------------------------------------------------------------------
+
+Note: You didn't specify an "-out" parameter to save this plan, so Terraform
+can't guarantee that exactly these actions will be performed if
+"terraform apply" is subsequently run.
 ```
 - It shows the destroy plan, and notes "You didn't specify an "-out" parameter to save this plan, so Terraform
 can't guarantee that exactly these actions will be performed if
 "terraform apply" is subsequently run." So, lets save the plan:
 ```bash
-terraform plan -destroy -out=example.pln
+terraform plan -destroy -out=example
+```
+```text
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # aws_s3_bucket.terraform_course will be destroyed
+  - resource "aws_s3_bucket" "terraform_course" {
+      - acl                         = "private" -> null
+      - arn                         = "arn:aws:s3:::tf-course-rafe-stefano" ->
+      - bucket                      = "tf-course-rafe-stefano" -> null
+      - bucket_domain_name          = "tf-course-rafe-stefano.s3.amazonaws.com
+      - bucket_regional_domain_name = "tf-course-rafe-stefano.s3.amazonaws.com
+      - force_destroy               = false -> null
+      - hosted_zone_id              = "Z3AQBSTGFYJSTF" -> null
+      - id                          = "tf-course-rafe-stefano" -> null
+      - region                      = "us-east-1" -> null
+      - request_payer               = "BucketOwner" -> null
+
+      - versioning {
+          - enabled    = false -> null
+          - mfa_delete = false -> null
+        }
+    }
+
+Plan: 0 to add, 0 to change, 1 to destroy.
+
+------------------------------------------------------------------------
+
+This plan was saved to: example
+
+To perform exactly these actions, run the following command to apply:
+    terraform apply "example"
 ```
