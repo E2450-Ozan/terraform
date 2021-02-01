@@ -1,9 +1,13 @@
-## terraform installation and first example of usage
+## Terraform installation and first example of usage
 - install terraform from "https://www.terraform.io/downloads.html"
 - create an environment variable
 - create AWS user named "terraform", having programmatic access
 - download the csv file of newly created IAM user and put it under .aws folder with a name "credentials"
 - create github repo named terraform, and clone it to the local
+
+## Terraform init
+- Terraform requires a project to first be initialized by finding any related .tf files. This is done by running the init command.
+
 - create "first_code.tf" under local repo, and write your first IaC which will create an S3 bucket!
 ```bash
 provider "aws" {
@@ -70,8 +74,9 @@ Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
     - apply
     - destroy
 
-## terraform plan
-- We can create an execution plan
+## Terraform plan
+- We can create an execution plan. The apply command is used in Terraform to reach a desired configuration for deployment. This means Terraform performs the known actions to take.
+
 - To see available options:
 ```bash
 terraform plan --help
@@ -201,6 +206,9 @@ Terraform will perform the following actions:
 Plan: 0 to add, 0 to change, 1 to destroy.
 ```
 ## Terraform State
+
+- When an implementation of an infrastructure is planned or executed, Terraform uses a state file to determine that the current status is correct.
+
 - Terraform state shows our intention, it may not be fitted with actual infrastructure.
 - The last terraform state can be inspected from terraform.tfstate file. This is a JSON file. For example:
 ```t
@@ -315,7 +323,9 @@ resource "aws_s3_bucket" "terraform_course" {
     }
 }
 ```
-- To see graph version in dot format:
+- A graph is a visual representation of a Terraform infrastructure project. To create a graph, the graph command can be used. The code output can then be used to build a visual graph.
+
+- After the graph command is used, the graph code can be pasted to create a graph visual with a graph generator. To see graph version in dot format:
 ```bash
 terraform graph
 ```
@@ -335,3 +345,126 @@ digraph {
 }
 ```
 - To visualize this graph, visit "http://www.jdolivet.byethost13.com/Logiciels/WebGraphviz/?i=1"
+
+## Terraform Plan
+
+- First make a plan, for example, a destroy plan:
+```bash
+terraform plan -destroy -out=destroyplan
+```
+```t
+An execution plan has been generated and is shown below.       
+Resource actions are indicated with the following symbols:     
+  - destroy
+
+Terraform will perform the following actions:
+
+  # aws_s3_bucket.terraform_course will be destroyed
+  - resource "aws_s3_bucket" "terraform_course" {
+      - acl                         = "private" -> null        
+      - arn                         = "arn:aws:s3:::tf-course-rafe-stefano" -> null    
+      - bucket                      = "tf-course-rafe-stefano" -> null
+      - bucket_domain_name          = "tf-course-rafe-stefano.s3.amazonaws.com" -> null
+      - bucket_regional_domain_name = "tf-course-rafe-stefano.s3.amazonaws.com" -> null
+      - force_destroy               = false -> null
+      - hosted_zone_id              = "Z3AQBSTGFYJSTF" -> null
+      - id                          = "tf-course-rafe-stefano" -> null
+      - region                      = "us-east-1" -> null
+      - request_payer               = "BucketOwner" -> null
+
+      - versioning {
+          - enabled    = false -> null
+          - mfa_delete = false -> null
+        }
+    }
+
+Plan: 0 to add, 0 to change, 1 to destroy.
+
+------------------------------------------------------------------------
+
+This plan was saved to: destroyplan
+
+To perform exactly these actions, run the following command to apply:
+    terraform apply "destroyplan"
+```
+- Now lets apply the plan:
+```bash
+terraform apply destroyplan
+```
+```t
+aws_s3_bucket.terraform_course: Destroying... [id=tf-course-rafe-stefano]
+aws_s3_bucket.terraform_course: Destruction complete after 1s
+
+Apply complete! Resources: 0 added, 0 changed, 1 destroyed.
+```
+## Resources
+
+- Resources are building blocks of terraform code. They define what of your infrastructure. Different settings for every provider.
+
+```bash
+# provider definition, isn't resource, just definition of the resource
+provider "aws" {        
+  profile = "default"
+  region = "us-east-1"
+}
+# resource, type, name
+resource "aws_s3_bucket" "terraform_course" {
+  # details of the resource, as arguments, bucket name must be unique   
+  bucket = "tf-course-rafe-stefano"    
+  acl = "private"
+}
+```
+### Basic Resource Types
+- s3 with static website
+```bash
+provider "aws" {
+  profile = "default"
+  region = "us-east-1"
+}
+
+resource "aws_s3_bucket" "s3_bucket_static_web" {
+  bucket = "terraform.farukgunal.net"
+  acl = "public-read"
+  policy = "${file("policy.json")}"  # policy from external file
+  website {
+    index_document = "index.html"
+    error_document = "error.html"
+  }
+}
+```
+- VPC
+```bash
+provider "aws" {
+  profile = "default"
+  region = "us-east-1"
+}
+# Just adopts existing vpc, not creating new resource
+resource "aws_default_vpc" "default" {
+  tags = {
+    "Name" = "Default VPC"
+  }
+}
+```
+- Security Group
+```bash
+provider "aws" {
+  profile = "default"
+  region = "us-east-1"
+}
+
+resource "aws_security_group" "allow_tls" {
+  ingress = [ {
+    cidr_blocks = [ "1.2.3.4/32" ]
+    from_port = 443
+    protocol = "tcp"
+    to_port = 443
+  } ]
+  # egress for outbound traffic, any protocol from any port
+  egress = [ {       
+    from_port = 0
+    protocol = "-1"
+    to_port = 0
+  } ]
+}
+```
+
