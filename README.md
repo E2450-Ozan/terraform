@@ -168,3 +168,94 @@ This plan was saved to: example
 To perform exactly these actions, run the following command to apply:
     terraform apply "example"
 ```
+- To see the saved plan:
+```bash
+terraform show example
+```
+```text
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # aws_s3_bucket.terraform_course will be destroyed
+  - resource "aws_s3_bucket" "terraform_course" {
+      - acl                         = "private" -> null
+      - arn                         = "arn:aws:s3:::tf-course-rafe-stefano" -> null
+      - bucket                      = "tf-course-rafe-stefano" -> null
+      - bucket_domain_name          = "tf-course-rafe-stefano.s3.amazonaws.com" -> null
+      - bucket_regional_domain_name = "tf-course-rafe-stefano.s3.amazonaws.com" -> null
+      - force_destroy               = false -> null
+      - hosted_zone_id              = "Z3AQBSTGFYJSTF" -> null
+      - id                          = "tf-course-rafe-stefano" -> null
+      - region                      = "us-east-1" -> null
+      - request_payer               = "BucketOwner" -> null
+
+      - versioning {
+          - enabled    = false -> null
+          - mfa_delete = false -> null
+        }
+    }
+
+Plan: 0 to add, 0 to change, 1 to destroy.
+```
+## Terraform State
+- Terraform state shows our intention, it may not be fitted with actual infrastructure.
+- The last terraform state can be inspected from terraform.tfstate file. This is a JSON file. For example:
+```bash
+{
+  "version": 4,
+  "terraform_version": "0.14.5",
+  "serial": 1,
+  "lineage": "5bec9aa0-64e0-5d77-a39e-95437076f3e9",
+  "outputs": {},
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "terraform_course",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "acceleration_status": "",
+            "acl": "private",
+            "arn": "arn:aws:s3:::tf-course-rafe-stefano",
+            "bucket": "tf-course-rafe-stefano",
+            "bucket_domain_name": "tf-course-rafe-stefano.s3.amazonaws.com",
+            "bucket_prefix": null,
+            "bucket_regional_domain_name": "tf-course-rafe-stefano.s3.amazonaws.com",
+            "cors_rule": [],
+            "force_destroy": false,
+            "grant": [],
+            "hosted_zone_id": "Z3AQBSTGFYJSTF",
+            "id": "tf-course-rafe-stefano",
+            "lifecycle_rule": [],
+            "logging": [],
+            "object_lock_configuration": [],
+            "policy": null,
+            "region": "us-east-1",
+            "replication_configuration": [],
+            "request_payer": "BucketOwner",
+            "server_side_encryption_configuration": [],
+            "tags": null,
+            "versioning": [
+              {
+                "enabled": false,
+                "mfa_delete": false
+              }
+            ],
+            "website": [],
+            "website_domain": null,
+            "website_endpoint": null
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA=="
+        }
+      ]
+    }
+  ]
+}
+```
