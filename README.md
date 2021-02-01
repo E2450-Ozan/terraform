@@ -16,9 +16,52 @@ resource "aws_s3_bucket" "terraform_course" {
   acl = "private"
 }
 ```
-- Apply your code using powershell command:
+- Apply your code, this command search for .tf file extention, look at the cloud provider, go through the plugins
 ```bash
 terraform apply
+```
+```txt
+An execution plan has been generated and is shown below.      
+Resource actions are indicated with the following symbols:    
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_s3_bucket.terraform_course will be created
+  + resource "aws_s3_bucket" "terraform_course" {
+      + acceleration_status         = (known after apply)     
+      + acl                         = "private"
+      + arn                         = (known after apply)     
+      + bucket                      = "tf-course-rafe-stefano"
+      + bucket_domain_name          = (known after apply)     
+      + bucket_regional_domain_name = (known after apply)
+      + force_destroy               = false
+      + hosted_zone_id              = (known after apply)
+      + id                          = (known after apply)
+      + region                      = (known after apply)
+      + request_payer               = (known after apply)
+      + website_domain              = (known after apply)
+      + website_endpoint            = (known after apply)
+
+      + versioning {
+          + enabled    = (known after apply)
+          + mfa_delete = (known after apply)
+        }
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+aws_s3_bucket.terraform_course: Creating...
+aws_s3_bucket.terraform_course: Still creating... [10s elapsed]
+aws_s3_bucket.terraform_course: Creation complete after 12s [id=tf-course-rafe-stefano]
+
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 ```
 - The CLI will show the status and info about infrastructure, and ask for confirmation, if agreed write "yes"
 - Terraform operations can be summarized:
