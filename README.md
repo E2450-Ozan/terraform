@@ -1,3 +1,13 @@
+## General command order
+```bash
+terraform plan
+terraform apply
+terraform state list
+terraform state show aws_s3_bucket.terraform_course
+terraform plan -destroy
+terraform plan -destroy -out=filenametostoreplan
+```
+
 ## Terraform installation and first example of usage
 - install terraform from "https://www.terraform.io/downloads.html"
 - create an environment variable
@@ -467,4 +477,124 @@ resource "aws_security_group" "allow_tls" {
   } ]
 }
 ```
+- EC2 instance
+```bash
+provider "aws" {
+  profile = "default"
+  region = "us-east-1"
+}
 
+resource "aws_instance" "web" {
+  ami = "${data.aws_ami.ubuntu.id}"
+  instance_type = "t2.micro"
+}
+```
+- Elastic IP
+```bash
+provider "aws" {
+  profile = "default"
+  region = "us-east-1"
+}
+
+resource "aws_eip" "web" {
+  instance = "${aws_instance.web.id}"
+  vpc = true
+}
+```
+
+## Terraform Style
+- Indentation 2 spaces
+- Single meta-arguments first
+- Block meta-arguments last
+- Line up = signs
+- Group single arguments
+- Use blank lines for readability
+
+## Some excercise operations
+
+- Modify prod.tf file, add default VPC block
+```bash
+provider "aws" {
+  profile = "default"
+  region = "us-east-1"
+}
+
+resource "aws_s3_bucket" "prod_tf_course" {
+  bucket = "tf-course-rafe-stefano"
+  acl = "private"
+}
+
+resource "aws_default_vpc" "default" {
+  tags = {
+    "Name" = "Default VPC"
+  }
+}
+```
+- We have a tf file, ready to create a plan
+```bash
+terraform plan
+```
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_default_vpc.default will be created
+  + resource "aws_default_vpc" "default" {
+      + arn                              = (known after apply)
+      + assign_generated_ipv6_cidr_block = (known after apply)
+      + cidr_block                       = (known after apply)
+      + default_network_acl_id           = (known after apply)
+      + default_route_table_id           = (known after apply)
+      + default_security_group_id        = (known after apply)
+      + dhcp_options_id                  = (known after apply)
+      + enable_classiclink               = (known after apply)
+      + enable_classiclink_dns_support   = (known after apply)
+      + enable_dns_hostnames             = (known after apply)
+      + enable_dns_support               = true
+      + id                               = (known after apply)
+      + instance_tenancy                 = (known after apply)
+      + ipv6_association_id              = (known after apply)
+      + ipv6_cidr_block                  = (known after apply)
+      + main_route_table_id              = (known after apply)
+      + owner_id                         = (known after apply)
+      + tags                             = {
+          + "Name" = "Default VPC"
+        }
+    }
+
+  # aws_s3_bucket.prod_tf_course will be created
+  + resource "aws_s3_bucket" "prod_tf_course" {
+      + acceleration_status         = (known after apply)
+      + acl                         = "private"
+      + arn                         = (known after apply)
+      + bucket                      = "tf-course-rafe-stefano"
+      + bucket_domain_name          = (known after apply)
+      + bucket_regional_domain_name = (known after apply)
+      + force_destroy               = false
+      + hosted_zone_id              = (known after apply)
+      + id                          = (known after apply)
+      + region                      = (known after apply)
+      + request_payer               = (known after apply)
+      + website_domain              = (known after apply)
+      + website_endpoint            = (known after apply)
+
+      + versioning {
+          + enabled    = (known after apply)
+          + mfa_delete = (known after apply)
+        }
+    }
+
+Plan: 2 to add, 0 to change, 0 to destroy.
+
+------------------------------------------------------------------------
+
+Note: You didn't specify an "-out" parameter to save this plan, so Terraform
+can't guarantee that exactly these actions will be performed if
+"terraform apply" is subsequently run.
+
+
+
+## Naming convention
+- Name using most specific specialty first and most general specialty last. networking-prod-us-west-aws
